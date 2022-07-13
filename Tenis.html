@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenis</title>
+    <style>
+    body {
+            background-color: darkgray;
+            height: 100vh;
+        }
+        canvas {border: 3px solid #fff;
+            margin: 0; 
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+        }
+        h1 {
+            text-align: left;
+        }
+    
+    </style>
+</head>
+<body>
+    <h1>Witam w grze Tenis!</h1>
+    <form action><p>Nickname: <input type="text" name="username" size="15" maxlength="25" /></p></form>
+    <canvas></canvas>
+    <script>
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 1000;
+canvas.height = 500;
+const cw = canvas.width;
+const ch = canvas.height;
+const ballSize = 20;
+let ballX = cw / 2 - ballSize / 2
+let ballY = ch / 2 - ballSize / 2
+const paddelHeight = 100;
+const paddelWidth = 20;
+const playerX = 70;
+const aiX = 910;
+let playerY = 200;
+let aiY = 200;
+const lineWidth = 6;
+const lineHeight = 16;
+let ballSpeedX = 4;
+let ballSpeedY = 4;
+function player() {
+    ctx.fillStyle = 'darkblue';
+    ctx.fillRect(playerX, playerY, paddelWidth, paddelHeight);
+}
+function ai() {
+    ctx.fillStyle = 'darkgreen';
+    ctx.fillRect(aiX, aiY, paddelWidth, paddelHeight);
+}
+function ball() {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(ballX, ballY, ballSize, ballSize);
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+    if (ballY <= 0 || ballY + ballSize >= ch)
+    {
+        ballSpeedY = -ballSpeedY;
+        speedUp()
+    }
+    if (ballX <= 0 || ballX + ballSize >= cw)
+    {
+        ballSpeedX = -ballSpeedX;
+        speedUp()
+    }
+}
+function table() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,cw,ch);
+    for (let linePosition = 20; linePosition < ch; linePosition +=30 ) {
+        ctx.fillStyle = 'gray'
+        ctx.fillRect(cw / 2 - lineWidth / 2, linePosition, lineWidth, lineHeight)
+    }
+}
+topCanvas = canvas.offsetTop;
+console.log(topCanvas)
+
+function playerPosition(e) {
+    playerY = e.clientY - topCanvas - paddelHeight / 2;
+if (playerY >= ch - paddelHeight) {
+    playerY = ch - paddelHeight
+    }
+if (playerY <= 0) {
+    playerY = 0;
+    }
+}
+function speedUp() {
+    if (ballSpeedX > 0 && ballSpeedX < 16) {
+        ballSpeedX += .1;
+    }
+    else if (ballSpeedX < 0 && ballSpeedX > -16) 
+    {
+        ballSpeedX -= 1;
+    }
+    if (ballSpeedY > 0 && ballSpeedY < 16) {
+        ballSpeedY += .01;
+    }
+    else if (ballSpeedY < 0 && ballSpeedY > -16) 
+    {
+        ballSpeedY -= .01;
+    }
+}
+function aiPosition() {
+    const middlePaddel = aiY + paddelHeight / 2;
+    const middleBall = ballY + ballSize / 2;
+    if(ballX > 500) {
+        if(middlePaddel - middleBall > 200) {
+            aiY -= 15;
+        }
+        else if(middlePaddel - middleBall > 50) {
+            aiY -= 10;
+        }
+        else if(middlePaddel - middleBall < -200) {
+            aiY += 15;
+        }
+        else if(middlePaddel - middleBall < -50) {
+            aiY += 10;
+        }
+    }
+    if (ballX <= 500 && ballX > 100) {
+        if (middlePaddel - middleBall > 100) {
+        aiY -= 3;
+        }
+        else if (middlePaddel - middleBall < -100) {
+        aiY += 3;
+        }
+    }
+}
+function odbiciePilkiPrzezGracza() {
+    if (ballX - paddelWidth <= playerX && ballY >= playerY - ballSize && ballY <= playerY + paddelHeight){
+        ballX +=5;
+        ballSpeedX = -ballSpeedX;
+        speedUp();
+   }
+   if (ballX <= 0) {
+       alert("Wygrał komp");
+   }
+   else if (ballX + ballSize >= cw) {
+       alert("Wygrałeś!");
+   }
+}
+function odbiciePilkiPrzezAi() {
+    if (ballX + ballSize >= aiX && ballY <= aiY + paddelHeight && ballY >= aiY - ballSize){
+        ballX-=5;
+        ballSpeedX = -ballSpeedX;
+        speedUp();
+    }
+}
+canvas.addEventListener("mousemove", playerPosition)
+function game() {
+    table()
+    ball()
+    player() 
+    ai()
+    aiPosition()
+    odbiciePilkiPrzezGracza()
+    odbiciePilkiPrzezAi()
+}
+setInterval(game, 1000 / 3000)
+   </script>
+</body>
+</html>
